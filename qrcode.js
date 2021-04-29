@@ -84,16 +84,108 @@ var QRCode;
 		this.dataList = [];
 	}
 
-	QRCodeModel.prototype={addData:function(data){var newData=new QR8bitByte(data);this.dataList.push(newData);this.dataCache=null;},isDark:function(row,col){if(row<0||this.moduleCount<=row||col<0||this.moduleCount<=col){throw new Error(row+","+col);}
-	return this.modules[row][col];},getModuleCount:function(){return this.moduleCount;},make:function(){this.makeImpl(false,this.getBestMaskPattern());},makeImpl:function(test,maskPattern){this.moduleCount=this.typeNumber*4+17;this.modules=new Array(this.moduleCount);for(var row=0;row<this.moduleCount;row++){this.modules[row]=new Array(this.moduleCount);for(var col=0;col<this.moduleCount;col++){this.modules[row][col]=null;}}
-	this.setupPositionProbePattern(0,0);this.setupPositionProbePattern(this.moduleCount-7,0);this.setupPositionProbePattern(0,this.moduleCount-7);this.setupPositionAdjustPattern();this.setupTimingPattern();this.setupTypeInfo(test,maskPattern);if(this.typeNumber>=7){this.setupTypeNumber(test);}
-	if(this.dataCache==null){this.dataCache=QRCodeModel.createData(this.typeNumber,this.errorCorrectLevel,this.dataList);}
-	this.mapData(this.dataCache,maskPattern);},setupPositionProbePattern:function(row,col){for(var r=-1;r<=7;r++){if(row+r<=-1||this.moduleCount<=row+r)continue;for(var c=-1;c<=7;c++){if(col+c<=-1||this.moduleCount<=col+c)continue;if((0<=r&&r<=6&&(c==0||c==6))||(0<=c&&c<=6&&(r==0||r==6))||(2<=r&&r<=4&&2<=c&&c<=4)){this.modules[row+r][col+c]=true;}else{this.modules[row+r][col+c]=false;}}}},getBestMaskPattern:function(){var minLostPoint=0;var pattern=0;for(var i=0;i<8;i++){this.makeImpl(true,i);var lostPoint=QRUtil.getLostPoint(this);if(i==0||minLostPoint>lostPoint){minLostPoint=lostPoint;pattern=i;}}
-	return pattern;},createMovieClip:function(target_mc,instance_name,depth){var qr_mc=target_mc.createEmptyMovieClip(instance_name,depth);var cs=1;this.make();for(var row=0;row<this.modules.length;row++){var y=row*cs;for(var col=0;col<this.modules[row].length;col++){var x=col*cs;var dark=this.modules[row][col];if(dark){qr_mc.beginFill(0,100);qr_mc.moveTo(x,y);qr_mc.lineTo(x+cs,y);qr_mc.lineTo(x+cs,y+cs);qr_mc.lineTo(x,y+cs);qr_mc.endFill();}}}
-	return qr_mc;},setupTimingPattern:function(){for(var r=8;r<this.moduleCount-8;r++){if(this.modules[r][6]!=null){continue;}
-	this.modules[r][6]=(r%2==0);}
-	for(var c=8;c<this.moduleCount-8;c++){if(this.modules[6][c]!=null){continue;}
-	this.modules[6][c]=(c%2==0);}},setupPositionAdjustPattern:function(){var pos=QRUtil.getPatternPosition(this.typeNumber);for(var i=0;i<pos.length;i++){for(var j=0;j<pos.length;j++){var row=pos[i];var col=pos[j];if(this.modules[row][col]!=null){continue;}
+	QRCodeModel.prototype={
+		addData:function(data){
+			var newData=new QR8bitByte(data);
+			this.dataList.push(newData);
+			this.dataCache=null;
+		},
+		isDark:function(row,col){
+			if(row<0||this.moduleCount<=row||col<0||this.moduleCount<=col){
+				throw new Error(row+","+col);
+			}
+			return this.modules[row][col];
+		},
+		getModuleCount:function(){
+			return this.moduleCount;
+		},
+		make:function(){
+			this.makeImpl(false,this.getBestMaskPattern());
+		},
+		makeImpl:function(test,maskPattern){
+			this.moduleCount=this.typeNumber*4+17;
+			this.modules=new Array(this.moduleCount);
+			for(var row=0;row<this.moduleCount;row++){
+				this.modules[row]=new Array(this.moduleCount);
+				for(var col=0;col<this.moduleCount;col++){
+					this.modules[row][col]=null;
+				}
+			}
+			this.setupPositionProbePattern(0,0);
+			this.setupPositionProbePattern(this.moduleCount-7,0);
+			this.setupPositionProbePattern(0,this.moduleCount-7);
+			this.setupPositionAdjustPattern();this.setupTimingPattern();
+			this.setupTypeInfo(test,maskPattern);
+			if(this.typeNumber>=7){
+				this.setupTypeNumber(test);
+			}
+			if(this.dataCache==null){
+				this.dataCache=QRCodeModel.createData(this.typeNumber,this.errorCorrectLevel,this.dataList);
+			}
+			this.mapData(this.dataCache,maskPattern);
+		},
+		setupPositionProbePattern:function(row,col){
+			for(var r=-1;r<=7;r++){
+				if(row+r<=-1||this.moduleCount<=row+r)continue;
+				for(var c=-1;c<=7;c++){
+					if(col+c<=-1||this.moduleCount<=col+c)continue;
+					if((0<=r&&r<=6&&(c==0||c==6))||(0<=c&&c<=6&&(r==0||r==6))||(2<=r&&r<=4&&2<=c&&c<=4)){
+						this.modules[row+r][col+c]=true;}else{this.modules[row+r][col+c]=false;
+						}
+					}
+				}
+			},
+			getBestMaskPattern:function(){
+				var minLostPoint=0;
+				var pattern=0;for(var i=0;i<8;i++){
+					this.makeImpl(true,i);
+					var lostPoint=QRUtil.getLostPoint(this);
+					if(i==0||minLostPoint>lostPoint){
+						minLostPoint=lostPoint;pattern=i;
+					}
+				}
+				return pattern;
+			},
+			createMovieClip:function(target_mc,instance_name,depth){
+				var qr_mc=target_mc.createEmptyMovieClip(instance_name,depth);
+				var cs=1;this.make();for(var row=0;row<this.modules.length;row++){
+					var y=row*cs;for(var col=0;col<this.modules[row].length;col++){
+						var x=col*cs;
+						var dark=this.modules[row][col];
+						if(dark){
+							qr_mc.beginFill(0,100);
+							qr_mc.moveTo(x,y);
+							qr_mc.lineTo(x+cs,y);
+							qr_mc.lineTo(x+cs,y+cs);
+							qr_mc.lineTo(x,y+cs);
+							qr_mc.endFill();
+						}
+					}
+				}
+				return qr_mc;
+			},
+			setupTimingPattern:function(){
+				for(var r=8;r<this.moduleCount-8;r++){
+					if(this.modules[r][6]!=null){
+						continue;
+					}
+					this.modules[r][6]=(r%2==0);
+				}
+				for(var c=8;c<this.moduleCount-8;c++){
+					if(this.modules[6][c]!=null){continue;
+					}
+					this.modules[6][c]=(c%2==0);
+				}
+			},
+			setupPositionAdjustPattern:function(){
+				var pos=QRUtil.getPatternPosition(this.typeNumber);
+				for(var i=0;i<pos.length;i++){
+					for(var j=0;j<pos.length;j++){
+						var row=pos[i];
+						var col=pos[j];
+						if(this.modules[row][col]!=null){
+							continue;
+						}
 	for(var r=-2;r<=2;r++){for(var c=-2;c<=2;c++){if(r==-2||r==2||c==-2||c==2||(r==0&&c==0)){this.modules[row+r][col+c]=true;}else{this.modules[row+r][col+c]=false;}}}}}},setupTypeNumber:function(test){var bits=QRUtil.getBCHTypeNumber(this.typeNumber);for(var i=0;i<18;i++){var mod=(!test&&((bits>>i)&1)==1);this.modules[Math.floor(i/3)][i%3+this.moduleCount-8-3]=mod;}
 	for(var i=0;i<18;i++){var mod=(!test&&((bits>>i)&1)==1);this.modules[i%3+this.moduleCount-8-3][Math.floor(i/3)]=mod;}},setupTypeInfo:function(test,maskPattern){var data=(this.errorCorrectLevel<<3)|maskPattern;var bits=QRUtil.getBCHTypeInfo(data);for(var i=0;i<15;i++){var mod=(!test&&((bits>>i)&1)==1);if(i<6){this.modules[i][8]=mod;}else if(i<8){this.modules[i+1][8]=mod;}else{this.modules[this.moduleCount-15+i][8]=mod;}}
 	for(var i=0;i<15;i++){var mod=(!test&&((bits>>i)&1)==1);if(i<8){this.modules[8][this.moduleCount-i-1]=mod;}else if(i<9){this.modules[8][15-i-1+1]=mod;}else{this.modules[8][15-i-1]=mod;}}
@@ -528,8 +620,8 @@ var QRCode;
 	 * @param {String} vOption.text QRCode link data
 	 * @param {Number} [vOption.width=256]
 	 * @param {Number} [vOption.height=256]
-	 * @param {String} [vOption.colorDark="#7b1b78"] //paynow default color
-	 * @param {String} [vOption.colorLight="#ffffff"] //paynow white background
+	 * @param {String} [vOption.colorDark="#000000"]
+	 * @param {String} [vOption.colorLight="#ffffff"]
 	 * @param {QRCode.CorrectLevel} [vOption.correctLevel=QRCode.CorrectLevel.H] [L|M|Q|H]
 	 */
 	QRCode = function (el, vOption) {
@@ -537,7 +629,7 @@ var QRCode;
 			width : 256,
 			height : 256,
 			typeNumber : 4,
-			colorDark : "#7b1b78",
+			colorDark : "#000000",
 			colorLight : "#ffffff",
 			correctLevel : QRErrorCorrectLevel.H
 		};
